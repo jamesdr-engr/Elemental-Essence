@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elemental Essence Quiz</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --fire: #e74c3c;
+      --rock: #95a5a6;
+      --tide: #3498db;
+      --wind: #2ecc71;
+      --lightning: #f39c12;
+      --shadow: #9b59b6;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+      background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+      background: linear-gradient(to right, var(--fire), var(--tide), var(--wind));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .subtitle {
+      font-size: 1.1rem;
+      color: #666;
+      font-weight: 300;
+    }
+    
+    .quiz-container {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .question {
+      margin-bottom: 30px;
+      display: none;
+    }
+    
+    .question.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .question-text {
+      font-size: 1.3rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+      color: #444;
+    }
+    
+    .options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+    
+    .option {
+      background: #f5f5f5;
+      padding: 15px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      border-left: 4px solid transparent;
+    }
+    
+    .option:hover {
+      background: #eee;
+      transform: translateX(5px);
+    }
+    
+    .option input {
+      margin-right: 15px;
+      transform: scale(1.2);
+    }
+    
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+    
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-next {
+      background: var(--tide);
+      color: white;
+    }
+    
+    .btn-prev {
+      background: #eee;
+      color: #666;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+    
+    .result-container {
+      display: none;
+      text-align: center;
+      background: white;
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .essence-icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+    }
+    
+    .essence-name {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .essence-color-fire { color: var(--fire); }
+    .essence-color-rock { color: var(--rock); }
+    .essence-color-tide { color: var(--tide); }
+    .essence-color-wind { color: var(--wind); }
+    .essence-color-lightning { color: var(--lightning); }
+    .essence-color-shadow { color: var(--shadow); }
+    
+    .persona-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    
+    .traits {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+    
+    .trait {
+      background: #f0f0f0;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+    
+    .description {
+      margin-bottom: 25px;
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+    
+    .advice {
+      background: #f8f8f8;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 30px;
+      font-style: italic;
+      border-left: 4px solid;
+    }
+    
+    .advice-fire { border-color: var(--fire); }
+    .advice-rock { border-color: var(--rock); }
+    .advice-tide { border-color: var(--tide); }
+    .advice-wind { border-color: var(--wind); }
+    .advice-lightning { border-color: var(--lightning); }
+    .advice-shadow { border-color: var(--shadow); }
+    
+    .advice-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #555;
+    }
+    
+    .progress-container {
+      width: 100%;
+      background-color: #f0f0f0;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      border-radius: 10px;
+      background: linear-gradient(to right, var(--fire), var(--tide));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #888;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .quiz-container, .result-container {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .traits {
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Elemental Essence</h1>
+      <p class="subtitle">Discover which elemental force resonates with your personality</p>
+    </header>
+    
+    <div class="quiz-container">
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      
+      <div class="question active" id="q1">
+        <h3 class="question-text">1. How do you prefer to spend your weekends?</h3>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="q1" value="fire"> Adventurous activities that get my adrenaline pumping
+          </label>
+          <label class="option">
+            <input type="radio" name="q1" value="rock"> Relaxing at home with familiar comforts
+          </label>
+          <label class="option">
+            <input type="radio" name="q1" value="tide"> Socializing with close friends or family
+          </label>
+          <label class="option">
+            <input type="radio" name="q1" value="wind"> Exploring new places or trying new experiences
+          </label>
+          <label class="option">
+            <input type="radio" name="q1" value="lightning"> Working on personal projects or goals
+          </label>
+          <label class="option">
+            <input type="radio" name="q1" value="shadow"> Enjoying quiet solitude with my thoughts
+          </label>
+        </div>
+      </div>
+      
+      <div class="question" id="q2">
+        <h3 class="question-text">2. When facing a problem, you usually:</h3>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="q2" value="fire"> Charge forward with bold action
+          </label>
+          <label class="option">
+            <input type="radio" name="q2" value="rock"> Take a steady, methodical approach
+          </label>
+          <label class="option">
+            <input type="radio" name="q2" value="tide"> Seek harmony and compromise
+          </label>
+          <label class="option">
+            <input type="radio" name="q2" value="wind"> Adapt flexibly to the situation
+          </label>
+          <label class="option">
+            <input type="radio" name="q2" value="lightning"> Analyze quickly and implement solutions
+          </label>
+          <label class="option">
+            <input type="radio" name="q2" value="shadow"> Look for deeper meanings and patterns
+          </label>
+        </div>
+      </div>
+      
+      <div class="question" id="q3">
+        <h3 class="question-text">3. Which environment feels most energizing to you?</h3>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="q3" value="fire"> A lively party or competitive event
+          </label>
+          <label class="option">
+            <input type="radio" name="q3" value="rock"> A cozy, familiar space
+          </label>
+          <label class="option">
+            <input type="radio" name="q3" value="tide"> Near water - beach, lake, or pool
+          </label>
+          <label class="option">
+            <input type="radio" name="q3" value="wind"> Outdoors with fresh air and open spaces
+          </label>
+          <label class="option">
+            <input type="radio" name="q3" value="lightning"> A dynamic, fast-paced work environment
+          </label>
+          <label class="option">
+            <input type="radio" name="q3" value="shadow"> A dimly lit, intimate setting
+          </label>
+        </div>
+      </div>
+      
+      <div class="question" id="q4">
+        <h3 class="question-text">4. How do others typically describe you?</h3>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="q4" value="fire"> Passionate and bold
+          </label>
+          <label class="option">
+            <input type="radio" name="q4" value="rock"> Dependable and steady
+          </label>
+          <label class="option">
+            <input type="radio" name="q4" value="tide"> Compassionate and nurturing
+          </label>
+          <label class="option">
+            <input type="radio" name="q4" value="wind"> Free-spirited and adaptable
+          </label>
+          <label class="option">
+            <input type="radio" name="q4" value="lightning"> Sharp and insightful
+          </label>
+          <label class="option">
+            <input type="radio" name="q4" value="shadow"> Mysterious and deep
+          </label>
+        </div>
+      </div>
+      
+      <div class="question" id="q5">
+        <h3 class="question-text">5. What's your approach to change?</h3>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="q5" value="fire"> I create change and shake things up
+          </label>
+          <label class="option">
+            <input type="radio" name="q5" value="rock"> I prefer stability and gradual change
+          </label>
+          <label class="option">
+            <input type="radio" name="q5" value="tide"> I go with the flow and adapt
+          </label>
+          <label class="option">
+            <input type="radio" name="q5" value="wind"> I welcome change as new opportunities
+          </label>
+          <label class="option">
+            <input type="radio" name="q5" value="lightning"> I analyze changes and implement quickly
+          </label>
+          <label class="option">
+            <input type="radio" name="q5" value="shadow"> I reflect deeply on changes before responding
+          </label>
+        </div>
+      </div>
+      
+      <div class="question" id="q6">
+        <h3 class="question-text">6. What motivates you the most?</h3>
+        <div class="options">
+          <label class="option"><input type="radio" name="q6" value="fire">The thrill of competition</label>
+          <label class="option"><input type="radio" name="q6" value="rock">A sense of duty</label>
+          <label class="option"><input type="radio" name="q6" value="tide">Helping others</label>
+          <label class="option"><input type="radio" name="q6" value="wind">Curiosity and discovery</label>
+          <label class="option"><input type="radio" name="q6" value="lightning">Achieving results</label>
+          <label class="option"><input type="radio" name="q6" value="shadow">Understanding deeper truths</label>
+        </div>
+      </div>
+      
+      <div class="question" id="q7">
+        <h3 class="question-text">7. In a group project, you are most likely to:</h3>
+        <div class="options">
+          <label class="option"><input type="radio" name="q7" value="fire">Take the lead and push things forward</label>
+          <label class="option"><input type="radio" name="q7" value="rock">Offer stability and support</label>
+          <label class="option"><input type="radio" name="q7" value="tide">Ensure everyone feels heard</label>
+          <label class="option"><input type="radio" name="q7" value="wind">Bring creative or unconventional ideas</label>
+          <label class="option"><input type="radio" name="q7" value="lightning">Solve problems quickly and efficiently</label>
+          <label class="option"><input type="radio" name="q7" value="shadow">Work quietly behind the scenes</label>
+        </div>
+      </div>
+      
+      <div class="question" id="q8">
+        <h3 class="question-text">8. Your ideal vacation would be:</h3>
+        <div class="options">
+          <label class="option"><input type="radio" name="q8" value="fire">A thrilling adventure trip</label>
+          <label class="option"><input type="radio" name="q8" value="rock">A cozy cabin in the mountains</label>
+          <label class="option"><input type="radio" name="q8" value="tide">A peaceful lakeside retreat</label>
+          <label class="option"><input type="radio" name="q8" value="wind">A backpacking journey with no set plan</label>
+          <label class="option"><input type="radio" name="q8" value="lightning">A fast-paced city exploration</label>
+          <label class="option"><input type="radio" name="q8" value="shadow">A quiet, remote place to reflect</label>
+        </div>
+      </div>
+      
+      <div class="question" id="q9">
+        <h3 class="question-text">9. What kind of stories do you enjoy most?</h3>
+        <div class="options">
+          <label class="option"><input type="radio" name="q9" value="fire">Heroic tales full of action</label>
+          <label class="option"><input type="radio" name="q9" value="rock">Stories about enduring strength</label>
+          <label class="option"><input type="radio" name="q9" value="tide">Heartfelt dramas and relationships</label>
+          <label class="option"><input type="radio" name="q9" value="wind">Adventures in far-off lands</label>
+          <label class="option"><input type="radio" name="q9" value="lightning">Fast-paced thrillers and mysteries</label>
+          <label class="option"><input type="radio" name="q9" value="shadow">Philosophical or psychological stories</label>
+        </div>
+      </div>
+      
+      <div class="question" id="q10">
+        <h3 class="question-text">10. Which quote resonates with you most?</h3>
+        <div class="options">
+          <label class="option"><input type="radio" name="q10" value="fire">"Fortune favors the bold."</label>
+          <label class="option"><input type="radio" name="q10" value="rock">"Slow and steady wins the race."</label>
+          <label class="option"><input type="radio" name="q10" value="tide">"In a gentle way, you can shake the world."</label>
+          <label class="option"><input type="radio" name="q10" value="wind">"Not all those who wander are lost."</label>
+          <label class="option"><input type="radio" name="q10" value="lightning">"Strike while the iron is hot."</label>
+          <label class="option"><input type="radio" name="q10" value="shadow">"The wound is the place where the Light enters you."</label>
+        </div>
+      </div>
+      
+      <div class="question" id="q11">
+        <h3 class="question-text">11. How do you recharge after a long day?</h3>
+        <div class="options">
+          <label class="option"><input type="radio" name="q11" value="fire">Exercise or physical activity</label>
+          <label class="option"><input type="radio" name="q11" value="rock">Quiet time in a cozy space</label>
+          <label class="option"><input type="radio" name="q11" value="tide">Talking with a loved one</label>
+          <label class="option"><input type="radio" name="q11" value="wind">Doing something spontaneous</label>
+          <label class="option"><input type="radio" name="q11" value="lightning">Tackling a new challenge</label>
+          <label class="option"><input type="radio" name="q11" value="shadow">Journaling or deep reflection</label>
+        </div>
+      </div>
+      
+      <div class="question" id="q12">
+        <h3 class="question-text">12. Which element do you feel most drawn to?</h3>
+        <div class="options">
+          <label class="option"><input type="radio" name="q12" value="fire">Fire</label>
+          <label class="option"><input type="radio" name="q12" value="rock">Earth</label>
+          <label class="option"><input type="radio" name="q12" value="tide">Water</label>
+          <label class="option"><input type="radio" name="q12" value="wind">Air</label>
+          <label class="option"><input type="radio" name="q12" value="lightning">Lightning</label>
+          <label class="option"><input type="radio" name="q12" value="shadow">Shadow</label>
+        </div>
+      </div>
+      
+      <div class="question" id="q13">
+        <h3 class="question-text">13. How do you react under pressure?</h3>
+        <div class="options">
+          <label class="option"><input type="radio" name="q13" value="fire">Act fast and take charge</label>
+          <label class="option"><input type="radio" name="q13" value="rock">Stay calm and grounded</label>
+          <label class="option"><input type="radio" name="q13" value="tide">Stay connected and empathetic</label>
+          <label class="option"><input type="radio" name="q13" value="wind">Stay flexible and think on your feet</label>
+          <label class="option"><input type="radio" name="q13" value="lightning">Analyze the situation quickly</label>
+          <label class="option"><input type="radio" name="q13" value="shadow">Withdraw and reflect first</label>
+        </div>
+      </div>
+      
+      <div class="question" id="q14">
+        <h3 class="question-text">14. Which of these best describes your life philosophy?</h3>
+        <div class="options">
+          <label class="option"><input type="radio" name="q14" value="fire">Live passionately and boldly</label>
+          <label class="option"><input type="radio" name="q14" value="rock">Build a strong, steady foundation</label>
+          <label class="option"><input type="radio" name="q14" value="tide">Embrace empathy and flow</label>
+          <label class="option"><input type="radio" name="q14" value="wind">Chase freedom and new horizons</label>
+          <label class="option"><input type="radio" name="q14" value="lightning">Think fast, act smart</label>
+          <label class="option"><input type="radio" name="q14" value="shadow">Seek understanding within</label>
+        </div>
+      </div>
+      
+      <div class="question" id="q15">
+        <h3 class="question-text">15. What’s your superpower?</h3>
+        <div class="options">
+          <label class="option"><input type="radio" name="q15" value="fire">Inspiring action in others</label>
+          <label class="option"><input type="radio" name="q15" value="rock">Staying grounded through chaos</label>
+          <label class="option"><input type="radio" name="q15" value="tide">Understanding people deeply</label>
+          <label class="option"><input type="radio" name="q15" value="wind">Adapting to anything</label>
+          <label class="option"><input type="radio" name="q15" value="lightning">Generating ideas rapidly</label>
+          <label class="option"><input type="radio" name="q15" value="shadow">Seeing what others miss</label>
+        </div>
+      </div>
+      
+      
+      <div class="navigation">
+        <button class="btn btn-prev" id="prevBtn" disabled>Previous</button>
+        <button class="btn btn-next" id="nextBtn">Next</button>
+      </div>
+    </div>
+    
+    <div class="result-container" id="result">
+      <div class="essence-icon" id="essenceIcon">🔥</div>
+      <h2 class="essence-name" id="essenceName">Fire</h2>
+      <h3 class="persona-title" id="personaTitle">The Blazing Catalyst</h3>
+      
+      <div class="traits" id="traitsContainer">
+        <span class="trait">Passionate</span>
+        <span class="trait">Energetic</span>
+        <span class="trait">Courageous</span>
+      </div>
+      
+      <p class="description" id="essenceDescription">
+        Your fiery spirit burns bright with passion and energy. Like a roaring flame, 
+        you bring warmth and intensity to everything you do. Your courage inspires 
+        others, and your enthusiasm is contagious.
+      </p>
+      
+      <div class="advice" id="adviceContainer">
+        <div class="advice-title">Advice</div>
+        <p id="adviceText">Remember that not everyone matches your intensity - practice patience with those who move at a different pace.</p>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    ELEMENTAL ESSENCE • Discover Your Inner Force
+  </footer>
+
+  <script>
+    // Quiz navigation
+    const questions = document.querySelectorAll('.question');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const quizContainer = document.querySelector('.quiz-container');
+    const resultContainer = document.getElementById('result');
+    const progressBar = document.getElementById('progressBar');
+    
+    // Result elements
+    const essenceIcon = document.getElementById('essenceIcon');
+    const essenceName = document.getElementById('essenceName');
+    const personaTitle = document.getElementById('personaTitle');
+    const traitsContainer = document.getElementById('traitsContainer');
+    const essenceDescription = document.getElementById('essenceDescription');
+    const adviceContainer = document.getElementById('adviceContainer');
+    const adviceText = document.getElementById('adviceText');
+    
+    let currentQuestion = 0;
+    const totalQuestions = questions.length;
+    
+    // Elemental essence data
+    const elements = {
+      fire: {
+        icon: '🔥',
+        name: 'Fire',
+        title: 'The Blazing Catalyst',
+        traits: ['Passionate', 'Energetic', 'Courageous'],
+        description: 'Your fiery spirit burns bright with passion and energy. Like a roaring flame, you bring warmth and intensity to everything you do. Your courage inspires others, and your enthusiasm is contagious.',
+        advice: 'Remember that not everyone matches your intensity - practice patience with those who move at a different pace.',
+        colorClass: 'essence-color-fire',
+        adviceClass: 'advice-fire'
+      },
+      rock: {
+        icon: '🪨',
+        name: 'Rock',
+        title: 'The Steady Foundation',
+        traits: ['Reliable', 'Patient', 'Grounded'],
+        description: 'You are the bedrock that others depend on. Like a mighty mountain, you stand firm through challenges. Your stability provides comfort to those around you, and your patience is a rare strength.',
+        advice: 'While your steadfast nature is valuable, remember to allow yourself moments of flexibility and spontaneity.',
+        colorClass: 'essence-color-rock',
+        adviceClass: 'advice-rock'
+      },
+      tide: {
+        icon: '🌊',
+        name: 'Tide',
+        title: 'The Flowing Empath',
+        traits: ['Adaptable', 'Compassionate', 'Intuitive'],
+        description: 'You move through life with the natural rhythm of the tides. Your emotional depth and ability to connect with others make you a natural healer. Like the ocean, you have hidden depths and a powerful presence.',
+        advice: 'Your sensitivity is a gift, but remember to set boundaries so you don\'t absorb too much from others.',
+        colorClass: 'essence-color-tide',
+        adviceClass: 'advice-tide'
+      },
+      wind: {
+        icon: '🌬️',
+        name: 'Wind',
+        title: 'The Free Spirit',
+        traits: ['Adaptable', 'Visionary', 'Independent'],
+        description: 'You dance through life with the freedom of the wind. Unconstrained and ever-changing, you bring fresh perspectives wherever you go. Your ability to adapt is remarkable, and you inspire others with your vision.',
+        advice: 'While your freedom is precious, remember that some roots can help you grow even taller.',
+        colorClass: 'essence-color-wind',
+        adviceClass: 'advice-wind'
+      },
+      lightning: {
+        icon: '⚡',
+        name: 'Lightning',
+        title: 'The Brilliant Spark',
+        traits: ['Quick-witted', 'Innovative', 'Dynamic'],
+        description: 'Your mind moves with the speed and precision of lightning. You illuminate ideas that others miss, and your energy is electrifying. When you speak, people listen, captivated by your insights.',
+        advice: 'Your quick mind is powerful, but remember that some things benefit from slow, deep consideration.',
+        colorClass: 'essence-color-lightning',
+        adviceClass: 'advice-lightning'
+      },
+      shadow: {
+        icon: '🌑',
+        name: 'Shadow',
+        title: 'The Mysterious Depths',
+        traits: ['Introspective', 'Perceptive', 'Complex'],
+        description: 'You understand the power of what lies beneath the surface. Like shadows that reveal shape and dimension, you see beyond appearances. Your depth of perception is rare, and your quiet intensity draws others in.',
+        advice: 'Your depth is valuable, but remember to sometimes step into the light and share your gifts with the world.',
+        colorClass: 'essence-color-shadow',
+        adviceClass: 'advice-shadow'
+      }
+    };
+    
+    function showQuestion(index) {
+      questions.forEach((q, i) => {
+        q.classList.toggle('active', i === index);
+      });
+      
+      prevBtn.disabled = index === 0;
+      nextBtn.textContent = index === questions.length - 1 ? 'See Results' : 'Next';
+      
+      // Update progress bar
+      const progress = ((index + 1) / totalQuestions) * 100;
+      progressBar.style.width = `${progress}%`;
+    }
+    
+    function calculateResult() {
+      const scores = {
+        fire: 0,
+        rock: 0,
+        tide: 0,
+        wind: 0,
+        lightning: 0,
+        shadow: 0
+      };
+      
+      // Count scores from all answered questions
+      questions.forEach(question => {
+        const selectedOption = question.querySelector('input[type="radio"]:checked');
+        if (selectedOption) {
+          scores[selectedOption.value]++;
+        }
+      });
+      
+      // Find the highest scoring element
+      let maxScore = -1;
+      let dominantElement = 'fire';
+      
+      for (const element in scores) {
+        if (scores[element] > maxScore) {
+          maxScore = scores[element];
+          dominantElement = element;
+        }
+      }
+      
+      return dominantElement;
+    }
+    
+    function showResult(element) {
+      const elementData = elements[element];
+      
+      // Update all result elements
+      essenceIcon.textContent = elementData.icon;
+      essenceName.textContent = elementData.name;
+      personaTitle.textContent = elementData.title;
+      essenceDescription.textContent = elementData.description;
+      adviceText.textContent = elementData.advice;
+      
+      // Update classes for color theming
+      essenceName.className = 'essence-name ' + elementData.colorClass;
+      personaTitle.className = 'persona-title ' + elementData.colorClass;
+      adviceContainer.className = 'advice ' + elementData.adviceClass;
+      
+      // Update traits
+      traitsContainer.innerHTML = '';
+      elementData.traits.forEach(trait => {
+        const traitEl = document.createElement('span');
+        traitEl.className = 'trait';
+        traitEl.textContent = trait;
+        traitsContainer.appendChild(traitEl);
+      });
+      
+      // Show result container
+      quizContainer.style.display = 'none';
+      resultContainer.style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+    
+    nextBtn.addEventListener('click', () => {
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        showQuestion(currentQuestion);
+      } else {
+        // Calculate and show results
+        const resultElement = calculateResult();
+        showResult(resultElement);
+      }
+    });
+    
+    prevBtn.addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion(currentQuestion);
+      }
+    });
+    
+    // Initialize
+    showQuestion(0);
+  </script>
+</body>
+</html>
